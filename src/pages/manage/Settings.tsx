@@ -20,17 +20,28 @@ export default function Settings() {
   const [code, setCode] = useState('')
   const [percent, setPercent] = useState('10')
   const [confirmReset, setConfirmReset] = useState(false)
+  // Money fields stay as text while typing so "4." or "" don't snap to a number mid-edit
+  const [fee, setFee] = useState(String(shop.deliveryFee))
+  const [freeOver, setFreeOver] = useState(String(shop.freeDeliveryOver))
   const set = <K extends keyof Shop>(k: K, v: Shop[K]) => setD((x) => ({ ...x, [k]: v }))
-  const dirty = JSON.stringify(d) !== JSON.stringify(shop)
+  const withMoney = (x: Shop): Shop => ({
+    ...x,
+    deliveryFee: Math.max(0, parseAmount(fee)),
+    freeDeliveryOver: Math.max(0, parseAmount(freeOver)),
+  })
+  const dirty = JSON.stringify(withMoney(d)) !== JSON.stringify(shop)
 
   const save = () => {
-    const e = validateShop(d)
+    const next = withMoney(d)
+    const e = validateShop(next)
     setErrors(e)
     if (Object.keys(e).length) {
       toast.error('Check the highlighted fields')
       return
     }
-    updateShop({ ...d, name: d.name.trim(), tagline: d.tagline.trim() })
+    updateShop({ ...next, name: next.name.trim(), tagline: next.tagline.trim() })
+    setFee(String(next.deliveryFee))
+    setFreeOver(String(next.freeDeliveryOver))
     toast.success('Settings saved')
   }
 
@@ -141,18 +152,16 @@ export default function Settings() {
                   <Input
                     id="s-fee"
                     inputMode="decimal"
-                    value={String(d.deliveryFee)}
-                    onChange={(e) => set('deliveryFee', Math.max(0, parseAmount(e.target.value)))}
+                    value={fee}
+                    onChange={(e) => setFee(e.target.value)}
                   />
                 </Field>
                 <Field label="Free delivery over" htmlFor="s-free" hint="0 turns it off">
                   <Input
                     id="s-free"
                     inputMode="decimal"
-                    value={String(d.freeDeliveryOver)}
-                    onChange={(e) =>
-                      set('freeDeliveryOver', Math.max(0, parseAmount(e.target.value)))
-                    }
+                    value={freeOver}
+                    onChange={(e) => setFreeOver(e.target.value)}
                   />
                 </Field>
               </div>
@@ -169,7 +178,7 @@ export default function Settings() {
             <ul className="divide-y rounded-2xl border">
               {d.promoCodes.map((p) => (
                 <li key={p.code} className="flex items-center gap-3 px-4 py-3">
-                  <span className="rounded-lg bg-muted px-2 py-1 font-mono text-xs font-semibold">
+                  <span className="rounded-lg bg-muted px-2 py-1 text-xs font-semibold tracking-wide">
                     {p.code}
                   </span>
                   <span className="text-sm text-muted-foreground">{p.percent}% off</span>
@@ -263,7 +272,10 @@ export default function Settings() {
             variant="danger"
             onClick={() => {
               resetDemo()
-              setD(useStore.getState().shop)
+              const fresh = useStore.getState().shop
+              setD(fresh)
+              setFee(String(fresh.deliveryFee))
+              setFreeOver(String(fresh.freeDeliveryOver))
               setConfirmReset(false)
               toast.success('Demo data restored')
             }}
