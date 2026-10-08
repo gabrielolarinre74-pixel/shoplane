@@ -143,6 +143,8 @@ const iso = (daysAgo: number, hour: number) => {
   const d = new Date()
   d.setDate(d.getDate() - daysAgo)
   d.setHours(hour, 15, 0, 0)
+  // Early in the day, "today" orders would land in the future; keep them a little in the past instead
+  if (d.getTime() > Date.now()) d.setTime(Date.now() - (24 - hour) * 6 * 60000)
   return d.toISOString()
 }
 

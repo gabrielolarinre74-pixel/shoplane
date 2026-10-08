@@ -89,7 +89,7 @@ export default function Products() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="size-11 shrink-0 overflow-hidden rounded-xl">
-                        <ProductArt product={p} />
+                        <ProductArt product={p} iconClassName="size-1/2" />
                       </div>
                       <div className="min-w-0">
                         <p className="flex items-center gap-1.5 font-medium">

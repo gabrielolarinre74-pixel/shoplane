@@ -160,7 +160,7 @@ function CartStep({ onNext }: { onNext: () => void }) {
         {lines.map(({ product, quantity, lineTotal }) => (
           <li key={product.id} className="flex items-center gap-3 py-4">
             <div className="size-16 shrink-0 overflow-hidden rounded-2xl">
-              <ProductArt product={product} />
+              <ProductArt product={product} iconClassName="size-1/2" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{product.name}</p>
