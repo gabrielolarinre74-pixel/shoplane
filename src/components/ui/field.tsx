@@ -1,4 +1,9 @@
-import { forwardRef, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react'
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from 'react'
 import { cn } from '@/lib/utils'
 
 const base =
@@ -7,19 +12,26 @@ const base =
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...props }, ref) {
     return <input ref={ref} className={cn(base, 'h-10', className)} {...props} />
-  }
+  },
 )
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(
-  function Textarea({ className, ...props }, ref) {
-    return <textarea ref={ref} className={cn(base, 'min-h-20 py-2.5 leading-relaxed', className)} {...props} />
-  }
-)
+export const Textarea = forwardRef<
+  HTMLTextAreaElement,
+  TextareaHTMLAttributes<HTMLTextAreaElement>
+>(function Textarea({ className, ...props }, ref) {
+  return (
+    <textarea
+      ref={ref}
+      className={cn(base, 'min-h-20 py-2.5 leading-relaxed', className)}
+      {...props}
+    />
+  )
+})
 
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(
   function Select({ className, ...props }, ref) {
     return <select ref={ref} className={cn(base, 'h-10 pr-8', className)} {...props} />
-  }
+  },
 )
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
@@ -46,9 +58,9 @@ export function Field({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {error ? (
-        <p className='mt-1 text-xs font-medium text-danger'>{error}</p>
+        <p className="mt-1 text-xs font-medium text-danger">{error}</p>
       ) : hint ? (
-        <p className='mt-1 text-xs text-muted-foreground'>{hint}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   )

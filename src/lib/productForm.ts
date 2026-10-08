@@ -40,10 +40,15 @@ const schema = z.object({
 })
 
 /** Validates the form and returns product values ready for the store, or field errors. */
-export function parseDraft(d: ProductDraft): { ok: true; value: Omit<Product, 'id' | 'createdAt'> } | { ok: false; errors: Partial<Record<keyof ProductDraft, string>> } {
+export function parseDraft(
+  d: ProductDraft,
+):
+  | { ok: true; value: Omit<Product, 'id' | 'createdAt'> }
+  | { ok: false; errors: Partial<Record<keyof ProductDraft, string>> } {
   const r = schema.safeParse(d)
   const errors: Partial<Record<keyof ProductDraft, string>> = {}
-  if (!r.success) for (const i of r.error.issues) errors[i.path[0] as keyof ProductDraft] ??= i.message
+  if (!r.success)
+    for (const i of r.error.issues) errors[i.path[0] as keyof ProductDraft] ??= i.message
   let stock: number | null = null
   if (d.trackStock) {
     const n = Number(d.stock)

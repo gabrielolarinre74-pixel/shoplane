@@ -23,13 +23,22 @@ export function nextOrderNumber(orders: Pick<Order, 'number'>[]) {
 }
 
 /** The message a shopper sends to the shop on WhatsApp. */
-export function orderMessage(order: Order, shop: Pick<Shop, 'name' | 'currency' | 'pickupAddress'>) {
+export function orderMessage(
+  order: Order,
+  shop: Pick<Shop, 'name' | 'currency' | 'pickupAddress'>,
+) {
   const m = (n: number) => formatMoney(n, shop.currency)
-  const lines = order.lines.map((l) => `• ${l.quantity} × ${l.name} — ${m(round2(l.price * l.quantity))}`)
+  const lines = order.lines.map(
+    (l) => `• ${l.quantity} × ${l.name} — ${m(round2(l.price * l.quantity))}`,
+  )
   const totals = [
     `Subtotal: ${m(order.subtotal)}`,
-    order.discount > 0 ? `Discount${order.promo ? ` (${order.promo})` : ''}: -${m(order.discount)}` : '',
-    order.fulfilment === 'delivery' ? `Delivery: ${order.delivery > 0 ? m(order.delivery) : 'Free'}` : '',
+    order.discount > 0
+      ? `Discount${order.promo ? ` (${order.promo})` : ''}: -${m(order.discount)}`
+      : '',
+    order.fulfilment === 'delivery'
+      ? `Delivery: ${order.delivery > 0 ? m(order.delivery) : 'Free'}`
+      : '',
     `Total: ${m(order.total)}`,
   ].filter(Boolean)
   const how =
@@ -78,19 +87,29 @@ export function salesStats(orders: Order[], todayISO: string) {
     averageOrder: live.length ? round2(revenue / live.length) : 0,
     todayCount: today.length,
     todayRevenue: round2(today.reduce((s, o) => s + o.total, 0)),
-    open: orders.filter((o) => o.status === 'new' || o.status === 'confirmed' || o.status === 'ready').length,
-    topProducts: [...units.values()].sort((a, b) => b.quantity - a.quantity || b.revenue - a.revenue).slice(0, 5),
+    open: orders.filter(
+      (o) => o.status === 'new' || o.status === 'confirmed' || o.status === 'ready',
+    ).length,
+    topProducts: [...units.values()]
+      .sort((a, b) => b.quantity - a.quantity || b.revenue - a.revenue)
+      .slice(0, 5),
   }
 }
 
 /** A short update the shop can send back to the customer when the order moves on. */
-export function customerUpdateMessage(order: Pick<Order, 'number' | 'status' | 'fulfilment' | 'customer'>, shop: Pick<Shop, 'name' | 'pickupAddress'>) {
+export function customerUpdateMessage(
+  order: Pick<Order, 'number' | 'status' | 'fulfilment' | 'customer'>,
+  shop: Pick<Shop, 'name' | 'pickupAddress'>,
+) {
   const first = order.customer.name.trim().split(/\s+/)[0] || 'there'
   const where = shop.pickupAddress ? ` at ${shop.pickupAddress.split('\n')[0]}` : ''
   const body: Record<OrderStatus, string> = {
     new: `we’ve received order ${order.number} and will confirm it shortly.`,
     confirmed: `order ${order.number} is confirmed and we’re on it.`,
-    ready: order.fulfilment === 'delivery' ? `order ${order.number} is ready and heading your way.` : `order ${order.number} is ready for pickup${where}.`,
+    ready:
+      order.fulfilment === 'delivery'
+        ? `order ${order.number} is ready and heading your way.`
+        : `order ${order.number} is ready for pickup${where}.`,
     completed: `thanks for your order ${order.number}! We hope you enjoyed it.`,
     cancelled: `sorry, order ${order.number} has been cancelled. Reply here if you have questions.`,
   }

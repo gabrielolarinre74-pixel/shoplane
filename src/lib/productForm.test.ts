@@ -6,10 +6,22 @@ describe('product form', () => {
   it('round-trips an existing product', () => {
     const p = sampleProducts[0]
     const r = parseDraft(toDraft(p))
-    expect(r.ok && r.value).toMatchObject({ name: p.name, price: p.price, stock: p.stock, category: p.category })
+    expect(r.ok && r.value).toMatchObject({
+      name: p.name,
+      price: p.price,
+      stock: p.stock,
+      category: p.category,
+    })
   })
   it('treats untracked stock as always available', () => {
-    const r = parseDraft({ ...toDraft(), name: 'Tea', category: 'Drinks', price: '$2.50', trackStock: false, stock: 'abc' })
+    const r = parseDraft({
+      ...toDraft(),
+      name: 'Tea',
+      category: 'Drinks',
+      price: '$2.50',
+      trackStock: false,
+      stock: 'abc',
+    })
     expect(r.ok && r.value.stock).toBeNull()
     expect(r.ok && r.value.price).toBe(2.5)
   })

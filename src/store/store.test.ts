@@ -6,7 +6,16 @@ const get = () => useStore.getState()
 const stock = (id: string) => get().products.find((p) => p.id === id)!.stock
 
 describe('store', () => {
-  beforeEach(() => useStore.setState({ shop: sampleShop, products: sampleProducts, orders: [], cart: [], promo: '', fulfilment: 'pickup' }))
+  beforeEach(() =>
+    useStore.setState({
+      shop: sampleShop,
+      products: sampleProducts,
+      orders: [],
+      cart: [],
+      promo: '',
+      fulfilment: 'pickup',
+    }),
+  )
 
   it('adds to cart within stock and removes at zero', () => {
     get().addToCart('p-cardamom', 2)
@@ -23,8 +32,21 @@ describe('store', () => {
     get().addToCart('p-flat-white', 1)
     get().setFulfilment('delivery')
     get().setPromo('WELCOME10')
-    const order = get().placeOrder({ name: 'Ada', phone: '+1 555 0199', address: '12 Elm St', note: '' })!
-    expect(order).toMatchObject({ number: '#1001', subtotal: 11.5, discount: 1.15, delivery: 4.5, total: 14.85, promo: 'WELCOME10', status: 'new' })
+    const order = get().placeOrder({
+      name: 'Ada',
+      phone: '+1 555 0199',
+      address: '12 Elm St',
+      note: '',
+    })!
+    expect(order).toMatchObject({
+      number: '#1001',
+      subtotal: 11.5,
+      discount: 1.15,
+      delivery: 4.5,
+      total: 14.85,
+      promo: 'WELCOME10',
+      status: 'new',
+    })
     expect(get().cart).toEqual([])
     expect(stock('p-croissant')).toBe(28)
     expect(stock('p-flat-white')).toBeNull()

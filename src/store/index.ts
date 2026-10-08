@@ -44,7 +44,11 @@ export const useStore = create<State>()(
           const rest = s.cart.filter((l) => l.productId !== productId)
           if (q === 0) return { cart: rest }
           const exists = s.cart.some((l) => l.productId === productId)
-          return { cart: exists ? s.cart.map((l) => (l.productId === productId ? { ...l, quantity: q } : l)) : [...s.cart, { productId, quantity: q }] }
+          return {
+            cart: exists
+              ? s.cart.map((l) => (l.productId === productId ? { ...l, quantity: q } : l))
+              : [...s.cart, { productId, quantity: q }],
+          }
         }),
 
       addToCart: (productId, quantity = 1) => {
@@ -67,7 +71,12 @@ export const useStore = create<State>()(
           createdAt: new Date().toISOString(),
           customer: { ...customer, address: fulfilment === 'delivery' ? customer.address : '' },
           fulfilment,
-          lines: lines.map((l) => ({ productId: l.product.id, name: l.product.name, price: l.product.price, quantity: l.quantity })),
+          lines: lines.map((l) => ({
+            productId: l.product.id,
+            name: l.product.name,
+            price: l.product.price,
+            quantity: l.quantity,
+          })),
           promo: price.promo,
           subtotal: price.subtotal,
           discount: price.discount,
@@ -81,7 +90,11 @@ export const useStore = create<State>()(
           orders: [order, ...orders],
           cart: [],
           promo: '',
-          products: products.map((p) => (p.stock !== null && taken.has(p.id) ? { ...p, stock: Math.max(0, p.stock - taken.get(p.id)!) } : p)),
+          products: products.map((p) =>
+            p.stock !== null && taken.has(p.id)
+              ? { ...p, stock: Math.max(0, p.stock - taken.get(p.id)!) }
+              : p,
+          ),
         })
         return order
       },
@@ -95,7 +108,9 @@ export const useStore = create<State>()(
           const products = delta
             ? s.products.map((p) => {
                 const line = order.lines.find((l) => l.productId === p.id)
-                return line && p.stock !== null ? { ...p, stock: Math.max(0, p.stock + delta * line.quantity) } : p
+                return line && p.stock !== null
+                  ? { ...p, stock: Math.max(0, p.stock + delta * line.quantity) }
+                  : p
               })
             : s.products
           return { products, orders: s.orders.map((o) => (o.id === id ? { ...o, status } : o)) }
@@ -111,10 +126,22 @@ export const useStore = create<State>()(
         return product.id
       },
 
-      deleteProduct: (id) => set((s) => ({ products: s.products.filter((p) => p.id !== id), cart: s.cart.filter((l) => l.productId !== id) })),
+      deleteProduct: (id) =>
+        set((s) => ({
+          products: s.products.filter((p) => p.id !== id),
+          cart: s.cart.filter((l) => l.productId !== id),
+        })),
       updateShop: (patch) => set((s) => ({ shop: { ...s.shop, ...patch } })),
-      resetDemo: () => set({ shop: sampleShop, products: sampleProducts, orders: sampleOrders(), cart: [], promo: '', fulfilment: 'pickup' }),
+      resetDemo: () =>
+        set({
+          shop: sampleShop,
+          products: sampleProducts,
+          orders: sampleOrders(),
+          cart: [],
+          promo: '',
+          fulfilment: 'pickup',
+        }),
     }),
-    { name: 'shoplane-data', version: 1 }
-  )
+    { name: 'shoplane-data', version: 1 },
+  ),
 )

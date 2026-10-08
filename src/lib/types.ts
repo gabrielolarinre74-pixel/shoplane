@@ -1,4 +1,14 @@
-export type ArtKey = 'coffee' | 'croissant' | 'cake' | 'cookie' | 'sandwich' | 'drink' | 'donut' | 'box' | 'wheat' | 'icecream'
+export type ArtKey =
+  | 'coffee'
+  | 'croissant'
+  | 'cake'
+  | 'cookie'
+  | 'sandwich'
+  | 'drink'
+  | 'donut'
+  | 'box'
+  | 'wheat'
+  | 'icecream'
 
 export type Product = {
   id: string

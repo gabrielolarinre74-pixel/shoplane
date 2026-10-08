@@ -22,7 +22,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { className, variant = 'outline', size = 'md', type = 'button', ...props },
-  ref
+  ref,
 ) {
   return (
     <button
@@ -32,7 +32,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         'inline-flex shrink-0 items-center rounded-full font-semibold whitespace-nowrap transition disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
         variants[variant],
         sizes[size],
-        className
+        className,
       )}
       {...props}
     />
