@@ -82,3 +82,29 @@ export function salesStats(orders: Order[], todayISO: string) {
     topProducts: [...units.values()].sort((a, b) => b.quantity - a.quantity || b.revenue - a.revenue).slice(0, 5),
   }
 }
+
+/** A short update the shop can send back to the customer when the order moves on. */
+export function customerUpdateMessage(order: Pick<Order, 'number' | 'status' | 'fulfilment' | 'customer'>, shop: Pick<Shop, 'name' | 'pickupAddress'>) {
+  const first = order.customer.name.trim().split(/\s+/)[0] || 'there'
+  const where = shop.pickupAddress ? ` at ${shop.pickupAddress.split('\n')[0]}` : ''
+  const body: Record<OrderStatus, string> = {
+    new: `we’ve received order ${order.number} and will confirm it shortly.`,
+    confirmed: `order ${order.number} is confirmed and we’re on it.`,
+    ready: order.fulfilment === 'delivery' ? `order ${order.number} is ready and heading your way.` : `order ${order.number} is ready for pickup${where}.`,
+    completed: `thanks for your order ${order.number}! We hope you enjoyed it.`,
+    cancelled: `sorry, order ${order.number} has been cancelled. Reply here if you have questions.`,
+  }
+  return `Hi ${first}, ${body[order.status]} — ${shop.name}`
+}
+
+/** "Just now", "12 min ago", "3 h ago", "Yesterday", or a short date. */
+export function timeAgo(iso: string, now = new Date()) {
+  const d = new Date(iso)
+  const mins = Math.round((now.getTime() - d.getTime()) / 60000)
+  if (mins < 1) return 'Just now'
+  if (mins < 60) return `${mins} min ago`
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  if (d.getTime() >= startOfToday) return `${Math.floor(mins / 60)} h ago`
+  if (d.getTime() >= startOfToday - 86400000) return 'Yesterday'
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}

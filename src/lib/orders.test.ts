@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nextOrderNumber, nextStatus, orderMessage, salesStats, whatsappLink } from './orders'
+import { customerUpdateMessage, nextOrderNumber, nextStatus, orderMessage, salesStats, timeAgo, whatsappLink } from './orders'
 import type { Order } from './types'
 
 const order = (over: Partial<Order> = {}): Order => ({
@@ -64,5 +64,30 @@ describe('orders helpers', () => {
     )
     expect(s).toMatchObject({ revenue: 25.8, orders: 2, averageOrder: 12.9, todayCount: 1, todayRevenue: 15.8, open: 1 })
     expect(s.topProducts[0]).toEqual({ name: 'Flat white', quantity: 4, revenue: 18 })
+  })
+})
+
+describe('customerUpdateMessage', () => {
+  const shop = { name: 'Test Bakery', pickupAddress: '1 Main St\nBack door' }
+  const base = { number: '#1009', fulfilment: 'pickup' as const, customer: { name: 'Ada  Lovelace', phone: '1', address: '', note: '' } }
+  it('greets by first name and names the pickup spot when ready', () => {
+    expect(customerUpdateMessage({ ...base, status: 'ready' }, shop)).toBe('Hi Ada, order #1009 is ready for pickup at 1 Main St. — Test Bakery')
+  })
+  it('uses delivery wording for delivery orders', () => {
+    expect(customerUpdateMessage({ ...base, fulfilment: 'delivery', status: 'ready' }, shop)).toContain('heading your way')
+  })
+  it('falls back to "there" with no name', () => {
+    expect(customerUpdateMessage({ ...base, customer: { ...base.customer, name: ' ' }, status: 'confirmed' }, shop)).toMatch(/^Hi there,/)
+  })
+})
+
+describe('timeAgo', () => {
+  const now = new Date(2026, 9, 8, 15, 0)
+  it('formats recent, same-day, yesterday and older times', () => {
+    expect(timeAgo(new Date(2026, 9, 8, 14, 59, 45).toISOString(), now)).toBe('Just now')
+    expect(timeAgo(new Date(2026, 9, 8, 14, 48).toISOString(), now)).toBe('12 min ago')
+    expect(timeAgo(new Date(2026, 9, 8, 9, 0).toISOString(), now)).toBe('6 h ago')
+    expect(timeAgo(new Date(2026, 9, 7, 9, 0).toISOString(), now)).toBe('Yesterday')
+    expect(timeAgo(new Date(2026, 9, 1, 9, 0).toISOString(), now)).toBe('Oct 1')
   })
 })
