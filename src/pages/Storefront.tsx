@@ -169,7 +169,7 @@ export default function Storefront() {
             ))}
           </div>
           <div className="flex gap-2">
-            <div className="relative flex-1 lg:w-64">
+            <div className="relative min-w-0 flex-1 lg:w-64">
               <Search className="absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="search"
@@ -184,7 +184,7 @@ export default function Storefront() {
               aria-label="Sort"
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="w-auto rounded-full"
+              className="w-36 shrink-0 rounded-full sm:w-auto"
             >
               <option value="featured">Popular first</option>
               <option value="price-asc">Price: low to high</option>

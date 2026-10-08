@@ -19,7 +19,7 @@ export function ProductCard({ product, onOpen }: { product: Product; onOpen: () 
       <button
         type="button"
         onClick={onOpen}
-        className="relative aspect-[4/3] overflow-hidden"
+        className="relative aspect-[16/10] overflow-hidden sm:aspect-[4/3]"
         aria-label={`View ${product.name}`}
       >
         <ProductArt
